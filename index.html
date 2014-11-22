@@ -67,6 +67,69 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-word-vector" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/11/22/word-vector/" class="article-date">
+  <time datetime="2014-11-22T05:06:25.000Z" itemprop="datePublished">11月 22 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/22/word-vector/">word vector</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="传统语言模型">传统语言模型</h1>
+<h2 id="基于规则的语言模型">基于规则的语言模型</h2>
+<p>为了让计算机完成机器翻译或语音识别这样只有人类才能完成的任务，就需要让计算机理解自然语言。早期人们的普遍认识是首先要做好两件事情，即分析语句和获取语义。</p>
+<p>为了分析语句，科学家们很自然地想到了用规则来描述句子，例如一个句子有主语、动词短语（谓语）和句号组成。而主语一般是名词，谓语由动词加名词短语构成等等。这个方法有两个问题，一是每条规则都需要人工编写；二是对略复杂的语言就需要建立相当大的句法树。而获取语义则要比分析语句更复杂。</p>
+<p>直到后来引入数学方法，在自然语言处理上才有了质的突破。</p>
+<h2 id="统计语言模型">统计语言模型</h2>
+<p>语言模型最核心的一个任务就是让计算机知道一个文字序列是否能够构成一个大家理解而且有意义的句子。通俗的话讲，就是判断一个句子是否是正常人说的话。</p>
+<p>统计语言模型的出发点很简单：一个句子是否合理，就看看它的可能性大小如何。至于可能性就用概率来衡量。用更严格、数学化的描述就是：</p>
+<p>假定\(S\)表示某一个有意义的句子，由一连串特定顺序排列的词\(w_1,w_2,…,w_n\)组成，这里\(n\)是句子的长度。现在我们想知道\(S\)在文本中的出现的可能性，也就是数学上的概率 \(P(S)=P(w_1,w_2,…,w_n) \)。</p>
+<p>利用条件概率公式，S这个序列出现的概率等于每一词出现的条件概率相乘，于是可展开为：<br>\[P(w_1,w_2,…,w_n)=P(w_1)P(w_2|w_1)P(w_3|w_1,w_2)…P(w_n|w_1,w_2,w_3,…,w_{n-1}) \]<br>其中\(P(w_1)\)表示第一个词\(w_1\)出现的概率，更确切地讲，是出现在句首位置的概率；\(P(w_2|w_1)\)是在已知第一个词是\(w_1\)的前提下，第二个词是\(w_2\)的概率；以此类推。不难看出，到了词\(w_n\)，它的出现概率取决于它前面的所有词。</p>
+<p>从计算量上看，第一个词的条件概率\(P(w_1)\)很容易计算，第二个词的条件概率\(P(w_2|w_1)\)也不麻烦，第三个词\(P(w_3|w_1,w_2)\)就非常难算了，因为涉及到3个变量，可能性是\(|V|^3\)（其中\(|V|\)是词表的大小，一般在几万到十几万之间）。可以看出，到最后一个词\(w_n\)的可能就太大了，无法估算。</p>
+<p>马尔可夫假设：假设任意一个词\(w_i\)出现的概率只同它前面的词\(w_{i-1}\)有关，于是问题就变得很简单了。现在\(S\)出现的概率就是：<br>\[P(S)=P(w_1)P(w_2|w_1)P(w_3|w_2)…P(w_n|w_{n-1}) \] </p>
+<p>对应的统计语言模型是二元模型。当然也可以假设一个词由它前面的N-1个词决定，对应的模型称为N元模型。</p>
+<p>接下来的问题就是如何估计\(P(w_i|w_{i-1})\)。</p>
+<p>根据它的定义：\(P(w_i|w_{i-1})=\frac{P(w_{i-1},w_i)}{P(w_{i-1})}\)。而估计联合概率\(P(w_{i-1},w_i)\)和边缘概率\(P(w_{i-1})\)，现在变得很简单。</p>
+<p>因为有了大量的语料数据，只要数一数\((w_{i-1},w_i)\)这对词在语料中前后相邻出现了多少次\(\#(w_{i-1},w_i)\)，以及\(w_{i-1}\)本身在语料中出现的次数\(\#(w_{i-1})\)，然后用两个数分别除以语料库的大小\(\#\)，即可得到这些词或二元组的相对频度：<br>\[f(w_{i-1},w_i)=\frac{\#(w_{i-1},w_i)}{\#}\]<br>\[f(w_{i-1})=\frac{\#(w_{i-1})}{\#}\] </p>
+<p>根据大数定理，只要统计量足够，相对频度就等于概率，即：<br>\[P(w_{i-1},w_i)=f(w_{i-1},w_i)\]<br>\[P(w_{i-1})=f(w_{i-1})\] </p>
+<p>因此\[P(w_{i-1},w_i)=\frac{\#(w_{i-1},w_i)}{\#(w_{i-1})}\]。</p>
+<p>通过上面的演变，可以看出统计语言模型存在几个问题：</p>
+<ol>
+<li>计算量问题<br>模型中需要统计的所有条件概率，我们称为模型的参数。N元模型的参数数量几乎是N的指数函数，即\(O(|V|^N)\)，而 一般在几万到几十万左右。例如，腾讯微博数据训练的词向量的词表有22万个。可以看出，要统计的参数数量巨大。</li>
+<li>零概率问题<br>如果有些N元组在训练语料中没有出现过，其对应的条件概率就是0，这会导致计算整句话的概率为0。解决这个问题有种常见的方法：一种是平滑法，利用各种平滑算法对零概率或小概率的元组进行平滑，最简单的就是将元组的出现次数+1，这样出现0次的元组就变成出现了1次，出现k次的元组就变成k+1次；另一种是回退法，即如果N元的概率找不到，那就用N-1元的概率乘上一个权重来模拟。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2014/11/22/word-vector/" data-id="8qqde51yo60xk966" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/词向量/">词向量</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/语言模型/">语言模型</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+  
     <article id="post-video-trend-ana" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/11/22/video-trend-ana/" class="article-date">
@@ -132,73 +195,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/11/22/video-trend-ana/" data-id="tql1oy5m9z27y1ki" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/11/22/video-trend-ana/" data-id="qsafqa1rdvlzndyb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/移动互联网/">移动互联网</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-  
-    <article id="post-word-vector" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/11/22/word-vector/" class="article-date">
-  <time datetime="2014-11-22T05:06:25.000Z" itemprop="datePublished">11月 22 2014</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/22/word-vector/">word vector</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="传统语言模型">传统语言模型</h1>
-<h2 id="基于规则的语言模型">基于规则的语言模型</h2>
-<p>为了让计算机完成机器翻译或语音识别这样只有人类才能完成的任务，就需要让计算机理解自然语言。早期人们的普遍认识是首先要做好两件事情，即分析语句和获取语义。</p>
-<p>为了分析语句，科学家们很自然地想到了用规则来描述句子，例如一个句子有主语、动词短语（谓语）和句号组成。而主语一般是名词，谓语由动词加名词短语构成等等。这个方法有两个问题，一是每条规则都需要人工编写；二是对略复杂的语言就需要建立相当大的句法树。而获取语义则要比分析语句更复杂。</p>
-<p>直到后来引入数学方法，在自然语言处理上才有了质的突破。</p>
-<h2 id="统计语言模型">统计语言模型</h2>
-<p>语言模型最核心的一个任务就是让计算机知道一个文字序列是否能够构成一个大家理解而且有意义的句子。通俗的话讲，就是判断一个句子是否是正常人说的话。</p>
-<p>统计语言模型的出发点很简单：一个句子是否合理，就看看它的可能性大小如何。至于可能性就用概率来衡量。用更严格、数学化的描述就是：</p>
-<p>假定\(S\)表示某一个有意义的句子，由一连串特定顺序排列的词\(w_1,w_2,…,w_n\)组成，这里\(n\)是句子的长度。现在我们想知道\(S\)在文本中的出现的可能性，也就是数学上的概率 \(P(S)=P(w_1,w_2,…,w_n) \)。</p>
-<p>利用条件概率公式，S这个序列出现的概率等于每一词出现的条件概率相乘，于是可展开为：<br>\[P(w_1,w_2,…,w_n)=P(w_1)P(w_2|w_1)P(w_3|w_1,w_2)…P(w_n|w_1,w_2,w_3,…,w_{n-1}) \]<br>其中\(P(w_1)\)表示第一个词\(w_1\)出现的概率，更确切地讲，是出现在句首位置的概率；\(P(w_2|w_1)\)是在已知第一个词是\(w_1\)的前提下，第二个词是\(w_2\)的概率；以此类推。不难看出，到了词\(w_n\)，它的出现概率取决于它前面的所有词。</p>
-<p>从计算量上看，第一个词的条件概率\(P(w_1)\)很容易计算，第二个词的条件概率\(P(w_2|w_1)\)也不麻烦，第三个词\(P(w_3|w_1,w_2)\)就非常难算了，因为涉及到3个变量，可能性是\(|V|^3\)（其中\(|V|\)是词表的大小，一般在几万到十几万之间）。可以看出，到最后一个词\(w_n\)的可能就太大了，无法估算。</p>
-<p>马尔可夫假设：假设任意一个词\(w_i\)出现的概率只同它前面的词\(w_{i-1}\)有关，于是问题就变得很简单了。现在\(S\)出现的概率就是：<br>\[P(S)=P(w_1)P(w_2|w_1)P(w_3|w_2)…P(w_n|w_{n-1}) \] </p>
-<p>对应的统计语言模型是二元模型。当然也可以假设一个词由它前面的N-1个词决定，对应的模型称为N元模型。</p>
-<p>接下来的问题就是如何估计\(P(w_i|w_{i-1})\)。</p>
-<p>根据它的定义：\(P(w_i|w_{i-1})=\frac{P(w_{i-1},w_i)}{P(w_{i-1})}\)。而估计联合概率\(P(w_{i-1},w_i)\)和边缘概率\(P(w_{i-1})\)，现在变得很简单。</p>
-<p>因为有了大量的语料数据，只要数一数\((w_{i-1},w_i)\)这对词在语料中前后相邻出现了多少次\(\#(w_{i-1},w_i)\)，以及\(w_{i-1}\)本身在语料中出现的次数\(\#(w_{i-1})\)，然后用两个数分别除以语料库的大小\(\#\)，即可得到这些词或二元组的相对频度：<br>\[f(w_{i-1},w_i)=\frac{\#(w_{i-1},w_i)}{\#}\]<br>\[f(w_{i-1})=\frac{\#(w_{i-1})}{\#}\] </p>
-<p>根据大数定理，只要统计量足够，相对频度就等于概率，即：<br>\[P(w_{i-1},w_i)=f(w_{i-1},w_i)\]<br>\[P(w_{i-1})=f(w_{i-1})\] </p>
-<p>因此\[P(w_{i-1},w_i)=\frac{\#(w_{i-1},w_i)}{\#(w_{i-1})}\]。</p>
-<p>通过上面的演变，可以看出统计语言模型存在几个问题：</p>
-<ol>
-<li>计算量问题<br>模型中需要统计的所有条件概率，我们称为模型的参数。N元模型的参数数量几乎是N的指数函数，即\(O(|V|^N)\)，而 一般在几万到几十万左右。例如，腾讯微博数据训练的词向量的词表有22万个。可以看出，要统计的参数数量巨大。</li>
-<li>零概率问题<br>如果有些N元组在训练语料中没有出现过，其对应的条件概率就是0，这会导致计算整句话的概率为0。解决这个问题有种常见的方法：一种是平滑法，利用各种平滑算法对零概率或小概率的元组进行平滑，最简单的就是将元组的出现次数+1，这样出现0次的元组就变成出现了1次，出现k次的元组就变成k+1次；另一种是回退法，即如果N元的概率找不到，那就用N-1元的概率乘上一个权重来模拟。</li>
-</ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/11/22/word-vector/" data-id="6i12hfkvw0cyw7g5" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/词向量/">词向量</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/语言模型/">语言模型</a></li></ul>
 
     </footer>
   </div>
@@ -253,7 +253,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/11/22/hello-world/" data-id="6j73txp1n3nbja3n" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2014/11/22/hello-world/" data-id="on2a4yvej2k6l4gd" class="article-share-link">Share</a>
       
       
     </footer>
@@ -306,11 +306,11 @@
       <ul>
         
           <li>
-            <a href="/2014/11/22/video-trend-ana/">移动的大潮</a>
+            <a href="/2014/11/22/word-vector/">word vector</a>
           </li>
         
           <li>
-            <a href="/2014/11/22/word-vector/">word vector</a>
+            <a href="/2014/11/22/video-trend-ana/">移动的大潮</a>
           </li>
         
           <li>
