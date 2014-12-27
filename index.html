@@ -67,6 +67,56 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-GFP-GSP-VCG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2014/12/27/GFP-GSP-VCG/" class="article-date">
+  <time datetime="2014-12-27T01:07:13.000Z" itemprop="datePublished">12月 27 2014</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/12/27/GFP-GSP-VCG/">竞价广告排名和计费</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>互联网广告的收费方式多种多样，CPM按展现计费、CPC按点击收费、CPS按销售提成等等。CPM属于展示广告计费，只要能满足定向的流量即可。而CPC/CPS属于效果广告的范畴，在保流量的同时而需要保证质量；因此在一次展示机会面前，出哪些广告、怎么排名、Click后收费多少，都与收入息息相关。</p>
+<p>最近在做的项目涉及到竞价的排名、计费，做了些调研，记录下来以免备忘。</p>
+<p>在没有深入了解之前，相信很多人可能和我最初的想法一样，对某次展示（可能是一次搜索、一个网页浏览等等），出价最高的广告主的广告排第一位，次高的排第二位。当有用户点击时，则广告主付费自己出价的费用。例如“三亚旅游”关键词，旅行社A出价10元，B出价5元，当用户搜索“三亚旅游”时，会同时看到A和B的广告，其中A排第一。当用户点击B的广告，则B付费5元。</p>
+<p>这种方式最容易想到，也没错太多。学术上称为“一阶密封价格拍卖（first price, sealed-bid auction）”，即广告主之间不知道对方的出价。一阶价格拍卖最早由GoTo公司提出，市值最高达到30亿美元，最后被Yahoo收购。</p>
+<p>这种方式有两个不好的地方，一个是封杀问题、另一个是出价不均衡问题。<br>先看封杀问题。假设旅行社B除了竞拍“三亚旅游”外，还买了自己旅行社名字的关键词，比如是“阳光旅游”，并出价1元。这时候旅行社A出于恶意，出价100元竞拍“阳光旅游”，如果说没点击100次能成交一笔业务，并收入500元。这样的话，A旅行社显然是赔钱的。它可以想办法降低点击，最好一次都不要点，例如广告的内容写上“电线杆疾病”，这样既抢到了“阳光旅游”关键词，又不用付费。但是，受害最大的并不是旅行社B，而是搜索引擎公司，两家旅行社互相斗气、互相封杀，投的广告没人点，就赚不到钱了。</p>
+<p>再说不均衡问题。还是旅行社A和B，购买“三亚旅游”，其中A的最高价是10元，B的最高价是5元。如果B以尽可能低的出价开始，例如1元，那么A会出价2元就会得到第一个广告位，B会将抬高到3元，以此往复，直到A出价6元，B不会再跟着出价7元，因为B心中“三亚旅游”最高只值5元。如果要得到第二个广告位，这时候B只要出价1元即可。那么A也只要2元就可以得到第一个广告位，这样循环又开始了。这种来来回回的降价、升价，显然也是搜索引擎公司不愿意看到的。</p>
+<p>Google AdWords改变了这种方式，引入了较稳定的二阶价格拍卖。即广告还是按广告主出价从高到低排序，但点击支付的费用不是自己的出价，而是下一位出价加上极小的零头，例如0.01元。<br>这样广告主修改自己出价的动力就降低了，因为自己的收费是由下一位决定的。还是旅行社为例。A出价10元，B出价5元，在二阶价格拍卖中，A需要支付5.01元，B支付的最小价格是1元（假设搜索引擎规定的起拍价是1元）。如果一方出价固定，另一方出价几次，就能判断出对方的价格。同时也可以恶意抬价，迫使对方用最高出价支付广告费。</p>
+<p>二阶价格拍卖能调整些均衡出价的问题，但没有解决封杀的问题。为了解决封杀，Google引入了广告质量得分的因素。质量分中最关键的就是点击率CTR（Click Through Rate）。在封杀案中，因为旅行社A的“阳光旅游”广告点击率太低，即便它出价很高，但也排不到前列。</p>
+<p>至此，广告竞价排名的算法，是按质量分乘以出价来排序，简单记为RankScore=CTR*Bid。这样排在前面的就是CTR和Bid都比较均衡的广告了。这时候，如果计价就有问题了。如果按二阶价格计费，排第二的广告可能是CTR低Bid很高，这样对第一位广告不公平；如果第二广告CTR高Bid低，会影响收入。</p>
+<p>常用的计费是 Cost(i) = RankScore(i+1)/CTR(i)。<br>\[Cost_{i-1}=\frac{RankScore_{i+1}}{CTR_i}=\frac{CTR_{i+1}Bid_i}{CTR_i}\]</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://wangrn.github.io/2014/12/27/GFP-GSP-VCG/" data-id="0b7imbkrdwj8u6uu" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/广告竞价排名/">广告竞价排名</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/广告计价收费/">广告计价收费</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算广告/">计算广告</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+
+  
     <article id="post-display-advertising-standford" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2014/12/13/display-advertising-standford/" class="article-date">
@@ -183,7 +233,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wangrn.github.io/2014/12/13/display-advertising-standford/" data-id="3m3gc4j98r733tps" class="article-share-link">Share</a>
+      <a data-url="http://wangrn.github.io/2014/12/13/display-advertising-standford/" data-id="xzbaqic74fq3umlw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/合约式广告/">合约式广告</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/展示广告/">展示广告</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/计算广告/">计算广告</a></li></ul>
@@ -262,7 +312,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wangrn.github.io/2014/11/22/video-trend-ana/" data-id="rntk64bvissh3zg6" class="article-share-link">Share</a>
+      <a data-url="http://wangrn.github.io/2014/11/22/video-trend-ana/" data-id="jbcua54g4l9tb2jo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/移动互联网/">移动互联网</a></li></ul>
@@ -325,7 +375,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wangrn.github.io/2014/11/22/word-vector/" data-id="zm9axolq5eyqxbe6" class="article-share-link">Share</a>
+      <a data-url="http://wangrn.github.io/2014/11/22/word-vector/" data-id="qnxggryfzq1jry5i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/词向量/">词向量</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/语言模型/">语言模型</a></li></ul>
@@ -383,7 +433,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://wangrn.github.io/2014/11/22/hello-world/" data-id="lp0arwsb89s1c59h" class="article-share-link">Share</a>
+      <a data-url="http://wangrn.github.io/2014/11/22/hello-world/" data-id="31ccbfcp7cyj67dn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -420,7 +470,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/合约式广告/" style="font-size: NaNpx;">合约式广告</a><a href="/tags/展示广告/" style="font-size: NaNpx;">展示广告</a><a href="/tags/移动互联网/" style="font-size: NaNpx;">移动互联网</a><a href="/tags/计算广告/" style="font-size: NaNpx;">计算广告</a><a href="/tags/词向量/" style="font-size: NaNpx;">词向量</a><a href="/tags/语言模型/" style="font-size: NaNpx;">语言模型</a>
+      <a href="/tags/合约式广告/" style="font-size: 10.00px;">合约式广告</a><a href="/tags/展示广告/" style="font-size: 10.00px;">展示广告</a><a href="/tags/广告竞价排名/" style="font-size: 10.00px;">广告竞价排名</a><a href="/tags/广告计价收费/" style="font-size: 10.00px;">广告计价收费</a><a href="/tags/移动互联网/" style="font-size: 10.00px;">移动互联网</a><a href="/tags/计算广告/" style="font-size: 20.00px;">计算广告</a><a href="/tags/词向量/" style="font-size: 10.00px;">词向量</a><a href="/tags/语言模型/" style="font-size: 10.00px;">语言模型</a>
     </div>
   </div>
 
@@ -429,7 +479,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/合约式广告/">合约式广告</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/展示广告/">展示广告</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/移动互联网/">移动互联网</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算广告/">计算广告</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/词向量/">词向量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/语言模型/">语言模型</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/合约式广告/">合约式广告</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/展示广告/">展示广告</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/广告竞价排名/">广告竞价排名</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/广告计价收费/">广告计价收费</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/移动互联网/">移动互联网</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/计算广告/">计算广告</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/词向量/">词向量</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/语言模型/">语言模型</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -440,7 +490,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/12/">December 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/11/">November 2014</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -450,6 +500,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2014/12/27/GFP-GSP-VCG/">竞价广告排名和计费</a>
+          </li>
         
           <li>
             <a href="/2014/12/13/display-advertising-standford/">展示广告--斯坦福大学</a>
